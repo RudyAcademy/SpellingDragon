@@ -49,11 +49,12 @@
       gap: 15px;
     }
     .top-avatar {
-      width: 80px;
-      height: 80px;
+      width: 85px;
+      height: 85px;
       border-radius: 50%;
-      border: 4px solid #2c5aa0;
+      border: 5px solid #2c5aa0;
       object-fit: cover;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
 
     .main-content {
@@ -81,6 +82,7 @@
       cursor: pointer;
       object-fit: cover;
       transition: transform 0.2s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
     .word-avatar:hover {
       transform: scale(1.1);
@@ -110,6 +112,7 @@
       width: 220px;
       border-radius: 50%;
       margin-bottom: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     }
     .dragon-placeholder p {
       font-family: "Cooper Black", "Impact", sans-serif;
@@ -124,29 +127,6 @@
       background: white;
       padding: 15px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-    }
-    #progressGrid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      flex: 1;
-    }
-    .progress-item {
-      display: flex;
-      align-items: center;
-      background: rgba(255,255,255,0.9);
-      padding: 8px;
-      border-radius: 8px;
-    }
-    .score-summary {
-      margin-top: 15px;
-      text-align: center;
-      font-family: "Cooper Black", "Impact", sans-serif;
-      font-size: 1.6rem;
-      padding: 10px;
-      border-top: 2px solid #2c5aa0;
     }
 
     .bottom-bar {
@@ -219,7 +199,7 @@
     </div>
     <div class="top-title">Reading-Dragon Spelling Page</div>
     <div class="avatars-top">
-      <img src="tutor_avatar.jpg" class="top-avatar" alt="Tutor">
+      <img src="tutor_avatar.jpeg" class="top-avatar" alt="Tutor">
       <img src="student_avatar.jpg" class="top-avatar" alt="Student">
     </div>
   </div>
@@ -241,8 +221,7 @@
     <!-- Student Progress -->
     <div class="progress-window" id="progressWindow">
       <h3 style="text-align:center; margin-top:0;">Student Progress</h3>
-      <div id="progressGrid"></div>
-      <div id="scoreSummary" class="score-summary"></div>
+      <div id="progressList"></div>
     </div>
   </div>
 
@@ -262,13 +241,12 @@
     const dragonWindow = document.getElementById('dragonWindow');
     const dragonPlaceholder = document.getElementById('dragonPlaceholder');
     const wordAvatarsContainer = document.getElementById('wordAvatars');
-    const progressGrid = document.getElementById('progressGrid');
-    const scoreSummary = document.getElementById('scoreSummary');
+    const progressList = document.getElementById('progressList');
     const answerInput = document.getElementById('answerInput');
     const categorySelect = document.getElementById('categorySelect');
 
     let currentWord = '';
-    let answers = []; // Store all answers for this session
+    let progress = {};
 
     const lessons = {
       fruits: [
@@ -321,51 +299,33 @@
       const answer = answerInput.value.trim().toLowerCase();
       const isCorrect = answer === currentWord.answer.toLowerCase();
 
-      answers.push({ item: currentWord, correct: isCorrect });
-
       if (isCorrect) {
         playVideo('good.mp4', () => addToProgress(currentWord, true));
       } else {
         playVideo('wrong.mp4', () => addToProgress(currentWord, false));
       }
-
-      // Check if 10 answers reached
-      if (answers.length >= 10) {
-        showScoreSummary();
-      }
     };
 
     function addToProgress(item, isCorrect) {
       const row = document.createElement('div');
-      row.className = 'progress-item';
+      row.style.display = 'flex';
+      row.style.alignItems = 'center';
+      row.style.marginBottom = '12px';
       row.innerHTML = `
-        <img src="${item.avatar}" style="width:60px;height:60px;border-radius:50%;margin-right:10px;object-fit:cover;">
-        ${isCorrect ? `<img src="coin-image.jpg" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">` : ''}
+        <img src="${item.avatar}" style="width:65px;height:65px;border-radius:50%;margin-right:12px;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">
+        ${isCorrect ? `<img src="coin-image.jpg" style="width:65px;height:65px;border-radius:50%;margin-right:8px;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">` : ''}
       `;
-      progressGrid.appendChild(row);
-    }
+      progressList.appendChild(row);
 
-    function showScoreSummary() {
-      const correctCount = answers.filter(a => a.correct).length;
-      const percentage = Math.round((correctCount / answers.length) * 100);
+      document.querySelectorAll('.word-avatar').forEach(av => {
+        if (av.src.includes(item.avatar)) av.classList.add('disabled');
+      });
 
-      scoreSummary.innerHTML = `
-        Score: ${correctCount} out of ${answers.length} (${percentage}%)
-      `;
-
-      if (percentage > 80) {
-        playVideo('way-to-go.mp4', () => {
-          playVideo('high-five.mp4');
-        });
-      } else {
-        playVideo('flame.mp4');
-      }
+      playVideo('click-left.mp4');
     }
 
     function resetLesson() {
-      answers = [];
-      progressGrid.innerHTML = '';
-      scoreSummary.innerHTML = '';
+      progressList.innerHTML = '';
       document.querySelectorAll('.word-avatar').forEach(av => av.classList.remove('disabled'));
     }
 
