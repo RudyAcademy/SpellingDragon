@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading-Dragon Spelling Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f8ff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    .category-select {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 10px;
+      background: white;
+    }
+    .top-title {
+      flex: 3;
+      background-image: url('button-frame.jpg');
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e60000;
+      -webkit-text-stroke: 4px white;
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      text-shadow: 3px 3px 8px #ffd700;
+    }
+    .avatars-top {
+      display: flex;
+      gap: 15px;
+    }
+    .top-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #2c5aa0;
+      object-fit: cover;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      min-height: 0;
+    }
+    .word-avatars {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      background: white;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      align-content: flex-start;
+    }
+    .word-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      cursor: pointer;
+      object-fit: cover;
+      transition: transform 0.2s;
+    }
+    .word-avatar:hover {
+      transform: scale(1.1);
+    }
+    .word-avatar.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .dragon-window {
+      flex: 2;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .dragon-placeholder {
+      text-align: center;
+      cursor: pointer;
+    }
+    .dragon-placeholder img {
+      width: 220px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+    .dragon-placeholder p {
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 1.8rem;
+      color: #2c5aa0;
+    }
+
+    .progress-window {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    #progressGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+    }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.9);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .score-summary {
+      margin-top: 15px;
+      text-align: center;
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 1.6rem;
+      padding: 10px;
+      border-top: 2px solid #2c5aa0;
+    }
+
+    .bottom-bar {
+      display: flex;
+      gap: 20px;
+      margin-top: 15px;
+    }
+    .typing-input {
+      flex: 3;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      background: white;
+    }
+    input {
+      width: 100%;
+      font-size: 2.2rem;
+      padding: 12px;
+      border: 2px solid #2c5aa0;
+      border-radius: 8px;
+      font-family: cursive;
+    }
+    .done-button {
+      flex: 1;
+      background-image: url('button-frame.jpg');
+      background-size: cover;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 2.4rem;
+      color: #e60000;
+      -webkit-text-stroke: 3px white;
+    }
+    .navigation {
+      flex: 1;
+      border: none;
+      border-radius: 12px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Header -->
+  <div class="header">
+    <div class="category-select">
+      <select id="categorySelect" style="width:100%; font-size:1.4rem; padding:8px;">
+        <option value="">Select Category</option>
+        <option value="fruits" selected>Fruits</option>
+        <option value="vegetables">Vegetables</option>
+        <option value="days">Days of the week</option>
+        <option value="seasons">Seasons</option>
+        <option value="colours">Colours</option>
+        <option value="months">Months of the Year</option>
+        <option value="body">Body parts</option>
+        <option value="classroom">Classroom objects</option>
+      </select>
+    </div>
+    <div class="top-title">Reading-Dragon Spelling Page</div>
+    <div class="avatars-top">
+      <img src="tutor_avatar.jpg" class="top-avatar" alt="Tutor">
+      <img src="student_avatar.jpg" class="top-avatar" alt="Student">
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Word Avatars -->
+    <div class="word-avatars" id="wordAvatars"></div>
+
+    <!-- Dragon Animation -->
+    <div class="dragon-window" id="dragonWindow">
+      <div class="dragon-placeholder" id="dragonPlaceholder">
+        <img src="reading-dragon-avatar.jpg" alt="Dragon">
+        <p>Click on me to start</p>
+      </div>
+      <video id="mainVideo" autoplay playsinline style="display:none;"></video>
+    </div>
+
+    <!-- Student Progress -->
+    <div class="progress-window" id="progressWindow">
+      <h3 style="text-align:center; margin-top:0;">Student Progress</h3>
+      <div id="progressGrid"></div>
+      <div id="scoreSummary" class="score-summary"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <div class="typing-input">
+      <input type="text" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
+    </div>
+    <div class="done-button" onclick="checkAnswer()">Done</div>
+    <div class="navigation">
+      <button onclick="resetLesson()" style="padding:10px 20px;">Reset Lesson</button>
+    </div>
+  </div>
+
+  <script>
+    const video = document.getElementById('mainVideo');
+    const dragonWindow = document.getElementById('dragonWindow');
+    const dragonPlaceholder = document.getElementById('dragonPlaceholder');
+    const wordAvatarsContainer = document.getElementById('wordAvatars');
+    const progressGrid = document.getElementById('progressGrid');
+    const scoreSummary = document.getElementById('scoreSummary');
+    const answerInput = document.getElementById('answerInput');
+    const categorySelect = document.getElementById('categorySelect');
+
+    let currentWord = '';
+    let answers = []; // Store all answers for this session
+
+    const lessons = {
+      fruits: [
+        { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple" },
+        { name: "banana", avatar: "banana_avatar.jpg", video: "banana.mp4", answer: "banana" },
+        { name: "melon", avatar: "melon_avatar.jpg", video: "melon.mp4", answer: "melon" },
+        { name: "grapes", avatar: "grapes_avatar.jpg", video: "grapes.mp4", answer: "grapes" }
+      ]
+    };
+
+    function playVideo(src, onEnd) {
+      const timestamp = new Date().getTime();
+      video.src = src + "?v=" + timestamp;
+      video.style.display = 'block';
+      dragonPlaceholder.style.display = 'none';
+      video.load();
+      video.play().catch(err => console.log("Video play prevented:", err));
+      video.onended = () => { if (onEnd) onEnd(); };
+    }
+
+    function startIntro() {
+      dragonPlaceholder.style.display = 'none';
+      playVideo('hello-there.mp4', () => {
+        playVideo('click-left.mp4', () => {
+          loadCategory('fruits');
+        });
+      });
+    }
+
+    function loadCategory(category) {
+      wordAvatarsContainer.innerHTML = '';
+      const items = lessons[category] || [];
+      items.forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.avatar;
+        img.className = 'word-avatar';
+        img.onclick = () => startWordExercise(item);
+        wordAvatarsContainer.appendChild(img);
+      });
+    }
+
+    function startWordExercise(item) {
+      currentWord = item;
+      answerInput.value = '';
+      playVideo(item.video, () => {});
+    }
+
+    window.checkAnswer = function() {
+      if (!currentWord) return;
+      const answer = answerInput.value.trim().toLowerCase();
+      const isCorrect = answer === currentWord.answer.toLowerCase();
+
+      answers.push({ item: currentWord, correct: isCorrect });
+
+      if (isCorrect) {
+        playVideo('good.mp4', () => addToProgress(currentWord, true));
+      } else {
+        playVideo('wrong.mp4', () => addToProgress(currentWord, false));
+      }
+
+      // Check if 10 answers reached
+      if (answers.length >= 10) {
+        showScoreSummary();
+      }
+    };
+
+    function addToProgress(item, isCorrect) {
+      const row = document.createElement('div');
+      row.className = 'progress-item';
+      row.innerHTML = `
+        <img src="${item.avatar}" style="width:60px;height:60px;border-radius:50%;margin-right:10px;object-fit:cover;">
+        ${isCorrect ? `<img src="coin-image.jpg" style="width:60px;height:60px;border-radius:50%;object-fit:cover;">` : ''}
+      `;
+      progressGrid.appendChild(row);
+    }
+
+    function showScoreSummary() {
+      const correctCount = answers.filter(a => a.correct).length;
+      const percentage = Math.round((correctCount / answers.length) * 100);
+
+      scoreSummary.innerHTML = `
+        Score: ${correctCount} out of ${answers.length} (${percentage}%)
+      `;
+
+      if (percentage > 80) {
+        playVideo('way-to-go.mp4', () => {
+          playVideo('high-five.mp4');
+        });
+      } else {
+        playVideo('flame.mp4');
+      }
+    }
+
+    function resetLesson() {
+      answers = [];
+      progressGrid.innerHTML = '';
+      scoreSummary.innerHTML = '';
+      document.querySelectorAll('.word-avatar').forEach(av => av.classList.remove('disabled'));
+    }
+
+    // Initialize
+    dragonPlaceholder.onclick = startIntro;
+    categorySelect.onchange = () => loadCategory(categorySelect.value);
+  </script>
+</body>
+</html>

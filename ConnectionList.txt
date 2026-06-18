@@ -1,0 +1,5 @@
+Word avatar image file         Movie file      correct word
+apple_avatar.jpg		apple.mp4	apple
+banana_avatar.jpg		banana.mp4	banana
+melon-avatar.jpg		melon.mp4	melon
+grapes-avatar.jpg		grapes.mp4	grapes
