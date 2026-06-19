@@ -1,5 +1,11 @@
-Word avatar image file         Movie file      correct word
+Word avatar image file         Movie file      correct spelling word
 apple_avatar.jpg		apple.mp4	apple
 banana_avatar.jpg		banana.mp4	banana
-melon-avatar.jpg		melon.mp4	melon
-grapes-avatar.jpg		grapes.mp4	grapes
+melon_avatar.jpg		melon.mp4	melon
+grapes_avatar.jpg		grapes.mp4	grapes
+orange_avatar.jpg		orange.mp4	orange
+peach_avatar.jpg		peach.mp4	peach
+strawberry_avatar.jpg		strawberry.mp4	strawberry
+pineapple_avatar.jpg		pineapple.mp4	pineapple
+cherry_avatar.jpg		cherry.mp4	cherry
+apricot_avatar.jpg		apricot.mp4	apricot 
