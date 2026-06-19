@@ -90,6 +90,7 @@
     .word-avatar.disabled {
       opacity: 0.4;
       cursor: not-allowed;
+      pointer-events: none;
     }
 
     .dragon-window {
@@ -127,6 +128,28 @@
       background: white;
       padding: 15px;
       overflow-y: auto;
+    }
+    #progressGrid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex: 1;
+      align-content: start;
+    }
+    .progress-item {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.9);
+      padding: 8px;
+      border-radius: 8px;
+    }
+    .score-summary {
+      margin-top: 15px;
+      text-align: center;
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 1.6rem;
+      padding: 10px;
+      border-top: 2px solid #2c5aa0;
     }
 
     .bottom-bar {
@@ -199,7 +222,7 @@
     </div>
     <div class="top-title">Reading-Dragon Spelling Page</div>
     <div class="avatars-top">
-      <img src="tutor_avatar.jpeg" class="top-avatar" alt="Tutor">
+      <img src="tutor_avatar.jpg" class="top-avatar" alt="Tutor">
       <img src="student_avatar.jpg" class="top-avatar" alt="Student">
     </div>
   </div>
@@ -221,7 +244,8 @@
     <!-- Student Progress -->
     <div class="progress-window" id="progressWindow">
       <h3 style="text-align:center; margin-top:0;">Student Progress</h3>
-      <div id="progressList"></div>
+      <div id="progressGrid"></div>
+      <div id="scoreSummary" class="score-summary"></div>
     </div>
   </div>
 
@@ -230,7 +254,7 @@
     <div class="typing-input">
       <input type="text" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
     </div>
-    <div class="done-button" onclick="checkAnswer()">Done</div>
+    <div class="done-button" id="doneButton" onclick="checkAnswer()">Done</div>
     <div class="navigation">
       <button onclick="resetLesson()" style="padding:10px 20px;">Reset Lesson</button>
     </div>
@@ -241,19 +265,27 @@
     const dragonWindow = document.getElementById('dragonWindow');
     const dragonPlaceholder = document.getElementById('dragonPlaceholder');
     const wordAvatarsContainer = document.getElementById('wordAvatars');
-    const progressList = document.getElementById('progressList');
+    const progressGrid = document.getElementById('progressGrid');
+    const scoreSummary = document.getElementById('scoreSummary');
     const answerInput = document.getElementById('answerInput');
+    const doneButton = document.getElementById('doneButton');
     const categorySelect = document.getElementById('categorySelect');
 
     let currentWord = '';
-    let progress = {};
+    let answers = [];
 
     const lessons = {
       fruits: [
         { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple" },
         { name: "banana", avatar: "banana_avatar.jpg", video: "banana.mp4", answer: "banana" },
         { name: "melon", avatar: "melon_avatar.jpg", video: "melon.mp4", answer: "melon" },
-        { name: "grapes", avatar: "grapes_avatar.jpg", video: "grapes.mp4", answer: "grapes" }
+        { name: "grapes", avatar: "grapes_avatar.jpg", video: "grapes.mp4", answer: "grapes" },
+        { name: "orange", avatar: "orange_avatar.jpg", video: "orange.mp4", answer: "orange" },
+        { name: "peach", avatar: "peach_avatar.jpg", video: "peach.mp4", answer: "peach" },
+        { name: "strawberry", avatar: "strawberry_avatar.jpg", video: "strawberry.mp4", answer: "strawberry" },
+        { name: "pineapple", avatar: "pineapple_avatar.jpg", video: "pineapple.mp4", answer: "pineapple" },
+        { name: "cherry", avatar: "cherry_avatar.jpg", video: "cherry.mp4", answer: "cherry" },
+        { name: "apricot", avatar: "apricot_avatar.jpg", video: "apricot.mp4", answer: "apricot" }
       ]
     };
 
@@ -283,6 +315,7 @@
         const img = document.createElement('img');
         img.src = item.avatar;
         img.className = 'word-avatar';
+        img.dataset.avatar = item.avatar; // Strong identifier
         img.onclick = () => startWordExercise(item);
         wordAvatarsContainer.appendChild(img);
       });
@@ -291,6 +324,7 @@
     function startWordExercise(item) {
       currentWord = item;
       answerInput.value = '';
+      doneButton.style.pointerEvents = 'auto';
       playVideo(item.video, () => {});
     }
 
@@ -299,42 +333,76 @@
       const answer = answerInput.value.trim().toLowerCase();
       const isCorrect = answer === currentWord.answer.toLowerCase();
 
+      answers.push({ item: currentWord, correct: isCorrect });
+
       if (isCorrect) {
         playVideo('good.mp4', () => addToProgress(currentWord, true));
       } else {
         playVideo('wrong.mp4', () => addToProgress(currentWord, false));
       }
+
+      answerInput.value = '';
+      doneButton.style.pointerEvents = 'none';
+
+      if (answers.length >= 10) {
+        showScoreSummary();
+      }
     };
 
     function addToProgress(item, isCorrect) {
       const row = document.createElement('div');
-      row.style.display = 'flex';
-      row.style.alignItems = 'center';
-      row.style.marginBottom = '12px';
+      row.className = 'progress-item';
       row.innerHTML = `
-        <img src="${item.avatar}" style="width:65px;height:65px;border-radius:50%;margin-right:12px;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">
-        ${isCorrect ? 
-          `<img src="coin-image.jpg" style="width:65px;height:65px;border-radius:50%;margin-right:8px;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">` : 
-          `<span style="font-family:'Cooper Black'; font-size: 3.2rem; color: #e60000; width:65px; text-align:center; display:inline-block;">X</span>`
-        }
+        <img src="${item.avatar}" style="width:60px;height:60px;border-radius:50%;margin-right:10px;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">
+        ${isCorrect ? `<img src="coin-image.jpg" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 6px 15px rgba(0,0,0,0.3);">` : `<span style="font-family:'Cooper Black'; font-size: 3.2rem; color: #e60000; width:60px; text-align:center;">X</span>`}
       `;
-      progressList.appendChild(row);
+      progressGrid.appendChild(row);
 
+      // Strong disable using data attribute
       document.querySelectorAll('.word-avatar').forEach(av => {
-        if (av.src.includes(item.avatar)) av.classList.add('disabled');
+        if (av.dataset.avatar === item.avatar) {
+          av.classList.add('disabled');
+          av.onclick = null;
+        }
       });
 
       playVideo('click-left.mp4');
     }
 
+    function showScoreSummary() {
+      const correctCount = answers.filter(a => a.correct).length;
+      const percentage = Math.round((correctCount / answers.length) * 100);
+
+      const summary = document.createElement('div');
+      summary.className = 'score-summary';
+      summary.innerHTML = `Score: ${correctCount} out of ${answers.length} (${percentage}%)`;
+      progressGrid.parentNode.appendChild(summary);
+
+      if (percentage > 80) {
+        playVideo('way-to-go.mp4', () => {
+          playVideo('high-five.mp4');
+        });
+      } else {
+        playVideo('flame.mp4');
+      }
+    }
+
     function resetLesson() {
-      progressList.innerHTML = '';
-      document.querySelectorAll('.word-avatar').forEach(av => av.classList.remove('disabled'));
+      answers = [];
+      progressGrid.innerHTML = '';
+      document.querySelectorAll('.score-summary').forEach(el => el.remove());
+      document.querySelectorAll('.word-avatar').forEach(av => {
+        av.classList.remove('disabled');
+        av.onclick = () => startWordExercise(lessons.fruits.find(l => av.dataset.avatar === l.avatar));
+      });
+      answerInput.value = '';
+      doneButton.style.pointerEvents = 'auto';
     }
 
     // Initialize
     dragonPlaceholder.onclick = startIntro;
     categorySelect.onchange = () => loadCategory(categorySelect.value);
+    doneButton.style.pointerEvents = 'none';
   </script>
 </body>
 </html>
