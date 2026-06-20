@@ -186,6 +186,20 @@
       color: #e60000;
       -webkit-text-stroke: 3px white;
     }
+    .say-again-button {
+      flex: 1;
+      background-image: url('button-frame.jpg');
+      background-size: cover;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: "Cooper Black", "Impact", sans-serif;
+      font-size: 2.0rem;
+      color: #0066cc;
+      -webkit-text-stroke: 3px white;
+    }
     .navigation {
       flex: 1;
       border: none;
@@ -209,20 +223,14 @@
   <div class="header">
     <div class="category-select">
       <select id="categorySelect" style="width:100%; font-size:1.4rem; padding:8px;">
-        <option value="">Select Category</option>
-        <option value="fruits" selected>Fruits</option>
-        <option value="vegetables">Vegetables</option>
-        <option value="days">Days of the week</option>
-        <option value="seasons">Seasons</option>
-        <option value="colours">Colours</option>
-        <option value="months">Months of the Year</option>
-        <option value="body">Body parts</option>
-        <option value="classroom">Classroom objects</option>
+        <option value="" selected>Select Category</option>
+        <option value="Fruit">Fruit</option>
+        <option value="Vegetable">Vegetable</option>
       </select>
     </div>
     <div class="top-title">Reading-Dragon Spelling Page</div>
     <div class="avatars-top">
-      <img src="tutor_avatar.jpeg" class="top-avatar" alt="Tutor">
+      <img src="tutor_avatar.jpg" class="top-avatar" alt="Tutor">
       <img src="student_avatar.jpg" class="top-avatar" alt="Student">
     </div>
   </div>
@@ -254,7 +262,8 @@
     <div class="typing-input">
       <input type="text" id="answerInput" placeholder="Type your answer here..." autocomplete="off">
     </div>
-    <div class="done-button" id="doneButton" onclick="checkAnswer()">Done</div>
+    <div class="done-button" id="doneButton" onclick="checkAnswer()">Check</div>
+    <div class="say-again-button" id="sayAgainButton" onclick="sayAgain()">Say-Again</div>
     <div class="navigation">
       <button onclick="resetLesson()" style="padding:10px 20px;">Reset Lesson</button>
     </div>
@@ -269,23 +278,32 @@
     const scoreSummary = document.getElementById('scoreSummary');
     const answerInput = document.getElementById('answerInput');
     const doneButton = document.getElementById('doneButton');
+    const sayAgainButton = document.getElementById('sayAgainButton');
     const categorySelect = document.getElementById('categorySelect');
 
     let currentWord = '';
     let answers = [];
+    let totalAvatars = 0;
 
+    // Load lessons from ConnectionList structure
     const lessons = {
-      fruits: [
-        { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple" },
-        { name: "banana", avatar: "banana_avatar.jpg", video: "banana.mp4", answer: "banana" },
-        { name: "melon", avatar: "melon_avatar.jpg", video: "melon.mp4", answer: "melon" },
-        { name: "grapes", avatar: "grapes_avatar.jpg", video: "grapes.mp4", answer: "grapes" },
-        { name: "orange", avatar: "orange_avatar.jpg", video: "orange.mp4", answer: "orange" },
-        { name: "peach", avatar: "peach_avatar.jpg", video: "peach.mp4", answer: "peach" },
-        { name: "strawberry", avatar: "strawberry_avatar.jpg", video: "strawberry.mp4", answer: "strawberry" },
-        { name: "pineapple", avatar: "pineapple_avatar.jpg", video: "pineapple.mp4", answer: "pineapple" },
-        { name: "cherry", avatar: "cherry_avatar.jpg", video: "cherry.mp4", answer: "cherry" },
-        { name: "apricot", avatar: "apricot_avatar.jpg", video: "apricot.mp4", answer: "apricot" }
+      Fruit: [
+        { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple", category: "Fruit" },
+        { name: "banana", avatar: "banana_avatar.jpg", video: "banana.mp4", answer: "banana", category: "Fruit" },
+        { name: "melon", avatar: "melon_avatar.jpg", video: "melon.mp4", answer: "melon", category: "Fruit" },
+        { name: "grapes", avatar: "grapes_avatar.jpg", video: "grapes.mp4", answer: "grapes", category: "Fruit" },
+        { name: "orange", avatar: "orange_avatar.jpg", video: "orange.mp4", answer: "orange", category: "Fruit" },
+        { name: "peach", avatar: "peach_avatar.jpg", video: "peach.mp4", answer: "peach", category: "Fruit" },
+        { name: "strawberry", avatar: "strawberry_avatar.jpg", video: "strawberry.mp4", answer: "strawberry", category: "Fruit" },
+        { name: "pineapple", avatar: "pineapple_avatar.jpg", video: "pineapple.mp4", answer: "pineapple", category: "Fruit" },
+        { name: "cherry", avatar: "cherry_avatar.jpg", video: "cherry.mp4", answer: "cherry", category: "Fruit" },
+        { name: "apricot", avatar: "apricot_avatar.jpg", video: "apricot.mp4", answer: "apricot", category: "Fruit" }
+      ],
+      Vegetable: [
+        { name: "cabbage", avatar: "cabbage_avatar.jpg", video: "cabbage.mp4", answer: "cabbage", category: "Vegetable" },
+        { name: "cucumber", avatar: "cucumber_avatar.jpg", video: "cucumber.mp4", answer: "cucumber", category: "Vegetable" },
+        { name: "potato", avatar: "potato_avatar.jpg", video: "potato.mp4", answer: "potato", category: "Vegetable" },
+        { name: "eggplant", avatar: "eggplant_avatar.jpg", video: "eggplant.mp4", answer: "eggplant", category: "Vegetable" }
       ]
     };
 
@@ -299,11 +317,17 @@
       video.onended = () => { if (onEnd) onEnd(); };
     }
 
+    function sayAgain() {
+      if (currentWord) {
+        playVideo(currentWord.video);
+      }
+    }
+
     function startIntro() {
       dragonPlaceholder.style.display = 'none';
       playVideo('hello-there.mp4', () => {
         playVideo('click-left.mp4', () => {
-          loadCategory('fruits');
+          // Wait for category selection
         });
       });
     }
@@ -311,11 +335,12 @@
     function loadCategory(category) {
       wordAvatarsContainer.innerHTML = '';
       const items = lessons[category] || [];
+      totalAvatars = items.length;
       items.forEach(item => {
         const img = document.createElement('img');
         img.src = item.avatar;
         img.className = 'word-avatar';
-        img.dataset.avatar = item.avatar; // Strong identifier
+        img.dataset.avatar = item.avatar;
         img.onclick = () => startWordExercise(item);
         wordAvatarsContainer.appendChild(img);
       });
@@ -325,6 +350,7 @@
       currentWord = item;
       answerInput.value = '';
       doneButton.style.pointerEvents = 'auto';
+      sayAgainButton.style.pointerEvents = 'auto';
       playVideo(item.video, () => {});
     }
 
@@ -343,10 +369,6 @@
 
       answerInput.value = '';
       doneButton.style.pointerEvents = 'none';
-
-      if (answers.length >= 10) {
-        showScoreSummary();
-      }
     };
 
     function addToProgress(item, isCorrect) {
@@ -358,7 +380,6 @@
       `;
       progressGrid.appendChild(row);
 
-      // Strong disable using data attribute
       document.querySelectorAll('.word-avatar').forEach(av => {
         if (av.dataset.avatar === item.avatar) {
           av.classList.add('disabled');
@@ -367,6 +388,10 @@
       });
 
       playVideo('click-left.mp4');
+
+      if (answers.length >= totalAvatars) {
+        showScoreSummary();
+      }
     }
 
     function showScoreSummary() {
@@ -377,6 +402,8 @@
       summary.className = 'score-summary';
       summary.innerHTML = `Score: ${correctCount} out of ${answers.length} (${percentage}%)`;
       progressGrid.parentNode.appendChild(summary);
+
+      sayAgainButton.style.pointerEvents = 'none';
 
       if (percentage > 80) {
         playVideo('way-to-go.mp4', () => {
@@ -397,12 +424,14 @@
       });
       answerInput.value = '';
       doneButton.style.pointerEvents = 'auto';
+      sayAgainButton.style.pointerEvents = 'auto';
     }
 
     // Initialize
     dragonPlaceholder.onclick = startIntro;
     categorySelect.onchange = () => loadCategory(categorySelect.value);
     doneButton.style.pointerEvents = 'none';
+    sayAgainButton.style.pointerEvents = 'none';
   </script>
 </body>
 </html>
