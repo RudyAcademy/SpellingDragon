@@ -226,6 +226,8 @@
         <option value="" selected>Select Category</option>
         <option value="Fruit">Fruit</option>
         <option value="Vegetable">Vegetable</option>
+        <option value="Days-n-Seasons">Days-n-Seasons</option>
+        <option value="Body-Parts">Body-Parts</option>
       </select>
     </div>
     <div class="top-title">Reading-Dragon Spelling Page</div>
@@ -285,8 +287,9 @@
     let answers = [];
     let totalAvatars = 0;
 
+    // Full lessons object built from your updated ConnectionList.txt
     const lessons = {
-      Fruit: [
+      "Fruit": [
         { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple", category: "Fruit" },
         { name: "banana", avatar: "banana_avatar.jpg", video: "banana.mp4", answer: "banana", category: "Fruit" },
         { name: "melon", avatar: "melon_avatar.jpg", video: "melon.mp4", answer: "melon", category: "Fruit" },
@@ -298,11 +301,35 @@
         { name: "cherry", avatar: "cherry_avatar.jpg", video: "cherry.mp4", answer: "cherry", category: "Fruit" },
         { name: "apricot", avatar: "apricot_avatar.jpg", video: "apricot.mp4", answer: "apricot", category: "Fruit" }
       ],
-      Vegetable: [
+      "Vegetable": [
         { name: "cabbage", avatar: "cabbage_avatar.jpg", video: "cabbage.mp4", answer: "cabbage", category: "Vegetable" },
         { name: "cucumber", avatar: "cucumber_avatar.jpg", video: "cucumber.mp4", answer: "cucumber", category: "Vegetable" },
         { name: "potato", avatar: "potato_avatar.jpg", video: "potato.mp4", answer: "potato", category: "Vegetable" },
-        { name: "eggplant", avatar: "eggplant_avatar.jpg", video: "eggplant.mp4", answer: "eggplant", category: "Vegetable" }
+        { name: "eggplant", avatar: "eggplant_avatar.jpg", video: "eggplant.mp4", answer: "eggplant", category: "Vegetable" },
+        { name: "tomato", avatar: "tomato_avatar.jpg", video: "tomato.mp4", answer: "tomato", category: "Vegetable" },
+        { name: "beans", avatar: "beans_avatar.jpg", video: "beans.mp4", answer: "beans", category: "Vegetable" },
+        { name: "carrot", avatar: "carrot_avatar.jpg", video: "carrot.mp4", answer: "carrot", category: "Vegetable" },
+        { name: "garlic", avatar: "garlic_avatar.jpg", video: "garlic.mp4", answer: "garlic", category: "Vegetable" },
+        { name: "mushroom", avatar: "mushroom_avatar.jpg", video: "mushroom.mp4", answer: "mushroom", category: "Vegetable" },
+        { name: "onion", avatar: "onion_avatar.jpg", video: "onion.mp4", answer: "onion", category: "Vegetable" }
+      ],
+      "Days-n-Seasons": [
+        { name: "monday", avatar: "monday_avatar.jpg", video: "monday.mp4", answer: "monday", category: "Days-n-Seasons" },
+        { name: "tuesday", avatar: "tuesday_avatar.jpg", video: "tuesday.mp4", answer: "tuesday", category: "Days-n-Seasons" },
+        { name: "wednesday", avatar: "wednesday_avatar.jpg", video: "wednesday.mp4", answer: "wednesday", category: "Days-n-Seasons" },
+        { name: "thursday", avatar: "thursday_avatar.jpg", video: "thursday.mp4", answer: "thursday", category: "Days-n-Seasons" },
+        { name: "friday", avatar: "friday_avatar.jpg", video: "friday.mp4", answer: "friday", category: "Days-n-Seasons" },
+        { name: "saturday", avatar: "saturday_avatar.jpg", video: "saturday.mp4", answer: "saturday", category: "Days-n-Seasons" },
+        { name: "sunday", avatar: "sunday_avatar.jpg", video: "sunday.mp4", answer: "sunday", category: "Days-n-Seasons" },
+        { name: "spring", avatar: "spring_avatar.jpg", video: "spring.mp4", answer: "spring", category: "Days-n-Seasons" },
+        { name: "summer", avatar: "summer_avatar.jpg", video: "summer.mp4", answer: "summer", category: "Days-n-Seasons" },
+        { name: "autumn", avatar: "autumn_avatar.jpg", video: "autumn.mp4", answer: "autumn", category: "Days-n-Seasons" },
+        { name: "winter", avatar: "winter_avatar.jpg", video: "winter.mp4", answer: "winter", category: "Days-n-Seasons" }
+      ],
+      "Body-Parts": [
+        { name: "head", avatar: "head_avatar.jpg", video: "head.mp4", answer: "head", category: "Body-Parts" },
+        { name: "leg", avatar: "leg_avatar.jpg", video: "leg.mp4", answer: "leg", category: "Body-Parts" },
+        { name: "shoulders", avatar: "shoulders_avatar.jpg", video: "shoulders.mp4", answer: "shoulders", category: "Body-Parts" }
       ]
     };
 
@@ -332,7 +359,7 @@
     }
 
     function loadCategory(category) {
-      // Reset progress when changing category
+      // Reset everything when changing category (pix protected)
       answers = [];
       progressGrid.innerHTML = '';
       document.querySelectorAll('.score-summary').forEach(el => el.remove());
@@ -341,6 +368,7 @@
       wordAvatarsContainer.innerHTML = '';
       const items = lessons[category] || [];
       totalAvatars = items.length;
+
       items.forEach(item => {
         const img = document.createElement('img');
         img.src = item.avatar;
@@ -385,6 +413,7 @@
       `;
       progressGrid.appendChild(row);
 
+      // PIX: Precise disable using data-avatar
       document.querySelectorAll('.word-avatar').forEach(av => {
         if (av.dataset.avatar === item.avatar) {
           av.classList.add('disabled');
@@ -394,6 +423,7 @@
 
       playVideo('click-left.mp4');
 
+      // Flexible completion (pix protected)
       if (answers.length >= totalAvatars) {
         showScoreSummary();
       }
@@ -425,7 +455,12 @@
       document.querySelectorAll('.score-summary').forEach(el => el.remove());
       document.querySelectorAll('.word-avatar').forEach(av => {
         av.classList.remove('disabled');
-        av.onclick = () => startWordExercise(lessons.fruits.find(l => av.dataset.avatar === l.avatar));
+        const category = Object.keys(lessons).find(cat => 
+          lessons[cat].some(l => l.avatar === av.dataset.avatar)
+        );
+        if (category) {
+          av.onclick = () => startWordExercise(lessons[category].find(l => l.avatar === av.dataset.avatar));
+        }
       });
       answerInput.value = '';
       doneButton.style.pointerEvents = 'auto';
