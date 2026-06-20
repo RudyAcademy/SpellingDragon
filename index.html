@@ -285,7 +285,6 @@
     let answers = [];
     let totalAvatars = 0;
 
-    // Load lessons from ConnectionList structure
     const lessons = {
       Fruit: [
         { name: "apple", avatar: "apple_avatar.jpg", video: "apple.mp4", answer: "apple", category: "Fruit" },
@@ -333,6 +332,12 @@
     }
 
     function loadCategory(category) {
+      // Reset progress when changing category
+      answers = [];
+      progressGrid.innerHTML = '';
+      document.querySelectorAll('.score-summary').forEach(el => el.remove());
+      currentWord = '';
+
       wordAvatarsContainer.innerHTML = '';
       const items = lessons[category] || [];
       totalAvatars = items.length;
